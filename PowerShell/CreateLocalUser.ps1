@@ -1,11 +1,11 @@
 $Computer = [ADSI]"WinNT://$Env:COMPUTERNAME,Computer"
 
-$LocalAdmin = $Computer.Create("User", "MyUserName")
-$LocalAdmin.SetPassword("Password01")
-$LocalAdmin.SetInfo()
+$LocalUser = $Computer.Create("User", "LocalUser")
+$LocalUser.SetPassword("Password01")
+$LocalUser.SetInfo()
 
-$LocalAdmin.FullName = "Local User by Powershell"
-$LocalAdmin.SetInfo()
+$LocalUser.FullName = "Local User by Powershell"
+$LocalUser.SetInfo()
 
-$LocalAdmin.UserFlags = 64 + 65536 # ADS_UF_PASSWD_CANT_CHANGE + ADS_UF_DONT_EXPIRE_PASSWD
-$LocalAdmin.SetInfo()
+$LocalUser.UserFlags = 64 + 65536 # ADS_UF_PASSWD_CANT_CHANGE + ADS_UF_DONT_EXPIRE_PASSWD
+$LocalUser.SetInfo()
