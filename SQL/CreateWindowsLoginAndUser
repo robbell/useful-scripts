@@ -1,0 +1,30 @@
+/* Create login */
+USE [MyDb]
+GO
+
+IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'DOMAIN\SomeUser')
+BEGIN
+    CREATE LOGIN [DOMAIN\SomeUser] FROM WINDOWS WITH DEFAULT_DATABASE=[MyDb], DEFAULT_LANGUAGE=[us_english]
+END
+GO
+
+/* Create user */
+USE [MyDb]
+GO
+
+IF EXISTS (SELECT * FROM sys.database_principals WHERE name = N'DOMAIN\SomeUser')
+BEGIN
+    DROP USER [DOMAIN\SomeUser]
+END
+
+CREATE USER [DOMAIN\SomeUser] FOR LOGIN [DOMAIN\SomeUser]
+
+USE [MyDb]
+GO
+EXEC sp_addrolemember N'db_datareader', N'DOMAIN\SomeUser'
+GO
+
+USE [MyDb]
+GO
+EXEC sp_addrolemember N'db_datawriter', N'DOMAIN\SomeUser'
+GO
