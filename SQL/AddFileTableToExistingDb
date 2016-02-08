@@ -1,0 +1,58 @@
+-- Create non-FILESTREAM DB
+
+USE MASTER
+GO
+
+CREATE DATABASE [MyDb]
+ON PRIMARY
+(
+	NAME = 'MyDb_data',
+	FILENAME = N'H:\SQLData\MyDb_data.mdf',
+	SIZE = 5GB,
+	MAXSIZE = UNLIMITED,
+	FILEGROWTH = 10% 
+)
+LOG ON
+(
+	NAME = 'MyDb_log',
+	FILENAME = N'L:\SQLLogs\MyDb_log.ldf',
+	SIZE = 1024KB , 
+	MAXSIZE = UNLIMITED, 
+	FILEGROWTH = 10%
+)
+GO
+
+ALTER DATABASE [MyDb] SET RECOVERY SIMPLE
+GO
+
+-- Create FILEGROUP
+
+ALTER DATABASE [MyDb] ADD FILEGROUP [FileStreamGroup] CONTAINS FILESTREAM
+GO
+
+-- Set FILEGROUP desination
+
+ALTER DATABASE [MyDb]
+ADD FILE
+(
+	NAME = 'MyDb_blobs',
+	FILENAME = N'S:\SQLFileStreamData\MyDbFiles'
+)
+TO FILEGROUP [FileStreamGroup]
+GO
+
+-- Enable FILESTREAM and set share name
+
+ALTER DATABASE [MyDb] SET FILESTREAM ( NON_TRANSACTED_ACCESS = FULL, DIRECTORY_NAME = N'MyDbFiles' )
+GO
+
+-- Create FILETABLE
+USE [MyDb]
+GO
+
+CREATE TABLE DocumentStore AS FileTable
+    WITH ( 
+          FileTable_Directory = 'DocumentTable',
+          FileTable_Collate_Filename = database_default
+         );
+GO
